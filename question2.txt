@@ -1,0 +1,47 @@
+### Questão 2:
+
+Utilizando uma *query*, obtenha a quantidade de graduações (`educations`) por usuário, incluindo o seu id.
+
+A resposta deve vir no formato:
+
+```
+|---id---|---educations---|
+   110	         2
+	 178	         1
+   62	           1
+   128	         1
+   ...          ...          
+```
+
+**OBS:** a coluna `id` se refere ao id do usuário
+
+=====================================================================================================================================
+
+PASSO 1: Conseguir retornar a tabela educations
+
+QUERY: SELECT * FROM educations;
+
+=====================================================================================================================================
+
+PASSO 2: Observando a tabela é possível ver que existem alguns userId's que se repetem, indicando que aquele usuário está em mais
+de uma graduação. O que eu quero então é ser capaz de contar quantas vezes cada usuário aparece na tabela. Para isso, é necessário
+fazer uma contagem de usuários na tabela, agrupando a contagem por usuário.
+
+QUERY: SELECT COUNT("userId") FROM educations GROUP BY "userId" ORDER BY "userId" ASC;
+
+=====================================================================================================================================
+
+PASSO 3: Ok, consegui fazer a contagem. Porém a resposta me informou somente a contagem, sem dizer qual o id do usuário que corresponde
+àquela contagem. Para conseguir ver esse id, basta que, além de selecionar a contagem, eu selecione também o userId.
+
+QUERY: SELECT "userId", COUNT("userId") FROM educations GROUP BY "userId" ORDER BY "userId" ASC;
+
+=====================================================================================================================================
+
+PASSO 4: Para finalizar, agora é só dar para as colunas os codinomes conforme o enunciado. "userId" tem que ser "id". "count" tem que
+ser "educations"
+
+QUERY FINAL: SELECT "userId" AS id, COUNT("userId") AS educations FROM educations GROUP BY "userId" ORDER BY "userId" ASC;
+ 
+
+

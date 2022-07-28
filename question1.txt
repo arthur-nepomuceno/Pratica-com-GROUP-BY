@@ -1,0 +1,53 @@
+### Questão 1:
+
+Utilizando uma *query*, obtenha a quantidade de experiências (`experiences`) atuais, ou seja, com `“endDate”` diferente de `NULL`.
+
+A resposta deve vir no formato:
+
+```
+|---currentExperiences---|
+	80
+			   ....      
+```
+
+**Dica**: Você só precisa usar uma função agregadora, sem `WHERE`
+=======================================================================================================================================
+
+PASSO 1: Primeira coisa é conseguir retornar a tabela experiences
+
+QUERY:
+
+SELECT * FROM experiences;
+
+=======================================================================================================================================
+
+PASSO 2: No enunciado é pedido a quantidade. O que acontece então se e tentar usar o COUNT?
+
+QUERY:
+
+SELECT COUNT("endDate") FROM experiences;
+
+RESPOSTA:
+
+ count 
+-------
+    80
+(1 row)
+
+=======================================================================================================================================
+
+PASSO 3: Beleza. Consegui a contagem do "endDate", porque o COUNT naturalmente desconsidera os valores nulos. Agora é só mudar o nome da
+coluna para "currentExperiences"
+
+QUERY FINAL:
+
+SELECT COUNT("endDate") AS "currentExperiences" FROM experiences;
+
+RESPOSTA FINAL:
+
+ currentExperiences 
+--------------------
+                 80
+(1 row)
+
+

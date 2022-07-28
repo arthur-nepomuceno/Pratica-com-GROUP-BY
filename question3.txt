@@ -1,0 +1,154 @@
+### Questão 3:
+
+Utilizando uma *query*, obtenha a quantidade de depoimentos(`testimonials`) que o usuário com id **435** efetuou, incluindo o seu nome. 
+
+A resposta deve vir no formato:
+
+```
+|---writer---|---testimonailCount---|
+    Jesus               3
+     ...               ...    
+```
+
+===============================================================================================================================================
+
+PASSO 1: Analisando o enunciado, dá para perceber o seguinte:
+
+- "obtenha a quantidade de depoimentos(`testimonials`)"
+	Se eu quero uma quantidade, vou precisar do COUNT.
+	
+- "que o usuário com id **435** efetuou" 
+	Se quero saber só do id 435, vou precisar do WHERE.
+	
+- "incluindo o seu nome."
+	Pelo diagrama da base de dados, vejo que a tabela testimonials guarda o id do usuário que fez o depoimento (writerId),
+	mas não o seu nome. A tabela que guarda o nome é a tabela users. Logo, também já sei que precisarei unir as duas tabelas
+	(JOIN) com a condição de que o writerId da tabela de depoimentos (testimonials."writerId") seja igual ao id da tabela de
+	usuários (users.id)
+	
+===============================================================================================================================================
+
+PASSO 2: Buscando os depoimentos
+
+QUERY: SELECT * FROM testimonials;
+
+===============================================================================================================================================
+
+PASSO 3: Buscando só os depoimentos do writerId = 435
+
+QUERY: SELECT * FROM testimonials WHERE "writerId" = 435;
+
+===============================================================================================================================================
+
+PASSO 4: Juntando com a tabela users para acessar o nome do usuário
+
+QUERY: 
+
+SELECT * 
+FROM testimonials 
+JOIN users 
+ON users.id = testimonials."writerId" 
+WHERE "writerId" = 435;
+
+===============================================================================================================================================
+
+PASSO 5: Pelo enunciado, sei que eu quero ver só o nome do usuário e a quantidade de depoimentos que ele fez. Então vou especificar que
+quero só a coluna de users.name.
+
+QUERY: 
+
+SELECT users.name 
+FROM testimonials 
+JOIN users 
+ON users.id = testimonials."writerId" 
+WHERE "writerId" = 435;
+
+RESPOSTA:
+
+ name  | id 
+-------+----
+ Jesus | 60
+ Jesus | 89
+ Jesus | 96
+(3 rows)
+
+
+===============================================================================================================================================
+
+PASSO 6: Agora eu agrupo pelo nome, para juntar tudo numa linha só
+
+QUERY: 
+
+SELECT users.name 
+FROM testimonials 
+JOIN users 
+ON users.id = testimonials."writerId" 
+WHERE "writerId" = 435 
+GROUP BY users.name;
+
+RESPOSTA:
+
+ name  
+-------
+ Jesus
+(1 row)
+
+===============================================================================================================================================
+
+PASSO 7: Peço a contagem, lembrando que, se estou agrupando pelo users.name, é por essa coluna que pedirei a contagem.
+
+QUERY: 
+
+SELECT users.name, COUNT(users.name) 
+FROM testimonials 
+JOIN users 
+ON users.id = testimonials."writerId" 
+WHERE "writerId" = 435 
+GROUP BY users.name;
+
+RESPOSTA:
+
+ name  | count 
+-------+-------
+ Jesus |     3
+(1 row)
+
+===============================================================================================================================================
+
+PASSO 8: E finalmente, para acabar, dou às colunas o codinome fornecido pelo enunciado. "name" tem que ser "writer" e "count" tem que ser
+"testimonailCount".
+
+QUERY FINAL: 
+
+SELECT users.name AS writer, COUNT(users.name) AS "testimonialCount" 
+FROM testimonials 
+JOIN users 
+ON users.id = testimonials."writerId" 
+WHERE "writerId" = 435 
+GROUP BY users.name;
+
+RESPOSTA FINAL:
+
+ writer | testimonialCount 
+--------+------------------
+ Jesus  |                3
+(1 row)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

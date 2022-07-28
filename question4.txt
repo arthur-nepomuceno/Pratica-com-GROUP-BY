@@ -1,0 +1,149 @@
+### Questão 4:
+
+Utilizando uma *query*, obtenha o maior salário das vagas (`jobs`) ativas (**`active** = true`) e o nome das posições (`roles`) dessas vagas ordenadas de forma ascendente
+
+A resposta deve vir no formato:
+
+```
+|---maximumSalary---|-------------role--------------|
+	107981	          Junior Software Engineer
+	153208	          Front-end developer
+	165869	          Senior Software Engineer
+	183405	          Software Engineer
+	201025	          Data Analyst
+	215640	          QA Analyst
+	230539	          Back-end developer
+	246764	          Scrum Master
+         ...                     ...
+```
+
+**Dica:** Podemos ordernar uma
+
+===============================================================================================================================================
+
+RACIOCINANDO: 
+
+Tabelas mencionadas no enunciado
+- jobs
+- roles
+
+O que eu quero de cada tabela
+- de jobs, quero só os salários
+- de roles, quero só os nomes
+
+Condições fornecidas
+- active = true da tabela jobs
+
+Uniões necessárias
+- roleId da tabela jobs com id da tabela roles
+
+===============================================================================================================================================
+PASSO 1: Buscando a tabela jobs
+
+QUERY: 
+
+SELECT * 
+FROM jobs 
+
+===============================================================================================================================================
+PASSO 2: Selecionando a coluna que eu quero ver
+
+QUERY: 
+
+SELECT jobs.salary, jobs."roleId"
+FROM jobs;
+
+
+===============================================================================================================================================
+PASSO 3: pegando o salário máximo, agrupado por id de função e colocando em ordem crescente
+
+QUERY:
+
+SELECT MAX(jobs.salary), jobs."roleId"
+FROM jobs 
+GROUP BY jobs."roleId" 
+ORDER BY max ASC;
+
+RESPOSTA:
+
+    max     | roleId 
+------------+--------
+     107981 |      1
+     153208 |     12
+     183405 |      2
+     215640 |      9
+     229468 |     10
+     246764 |      8
+     256310 |      4
+     257172 |      7
+     261307 |     13
+     265869 |      3
+     267886 |     11
+    3040208 |      6
+ 1000000000 |      5
+(13 rows)
+
+===============================================================================================================================================
+PASSO 4: juntando com a tabela roles e mostrando o nome de cada função. DETALHE: se vou selecionar o nome das funções (roles.name), tabém preciso
+adicionar essa coluna no agrupamento
+
+QUERY:
+
+SELECT MAX(jobs.salary), jobs."roleId", roles.name
+FROM jobs
+JOIN roles
+ON roles.id = jobs."roleId" 
+GROUP BY jobs."roleId", roles.name
+ORDER BY max ASC;
+
+RESPOSTA:
+
+    max     | roleId |           name           
+------------+--------+--------------------------
+     107981 |      1 | Junior Software Engineer
+     153208 |     12 | Front-end developer
+     183405 |      2 | Software Engineer
+     215640 |      9 | QA Analyst
+     229468 |     10 | Data Analyst
+     246764 |      8 | Scrum Master
+     256310 |      4 | Tech Lead
+     257172 |      7 | Product Manager
+     261307 |     13 | DevOps Analyst
+     265869 |      3 | Senior Software Engineer
+     267886 |     11 | Back-end developer
+    3040208 |      6 | VP of Technology
+ 1000000000 |      5 | CTO
+
+
+===============================================================================================================================================
+PASSO 5: Agora eu removo a colunas de id da visualização, e altero os nomes das colunas para os codinomes dados pelo enunciado.
+
+QUERY:
+
+SELECT MAX(jobs.salary), jobs."roleId"
+FROM jobs
+JOIN roles
+ON roles.id = jobs."roleId" 
+GROUP BY jobs."roleId"
+ORDER BY max ASC;
+
+===============================================================================================================================================
+PASSO 6: Para finalizar, é só filtrar o usando o WHERE, buscando só os resultados com active = true;
+
+QUERY FINAL:
+
+SELECT MAX(jobs.salary) AS "maximumSalary", roles.name AS role
+FROM jobs
+JOIN roles
+ON roles.id = jobs."roleId" 
+WHERE jobs.active = true 
+GROUP BY roles.name
+ORDER BY "maximumSalary" ASC;
+
+
+
+
+
+
+
+

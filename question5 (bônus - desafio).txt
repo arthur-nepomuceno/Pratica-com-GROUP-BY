@@ -1,0 +1,124 @@
+### Desafio Bônus
+
+Utilizando uma *query*, obtenha os **3** cursos (`courses`) e escolas (`schools`) com a **maior** quantidade de alunos (`educations`) que estão cursando (`status='ongoing'` ) ou finalizaram (`status='finished'`) 
+
+A resposta deve vir no formato:
+
+```
+|-----------------school-----------------|-----course------|----studentsCount----|------role-------|
+         Universidad de Los Andes	       Linguistics           7	              ongoing
+    Universitas Slamet Riyadi Surakarta  	 Psychology   	       6	              finished
+       American International College	       Philosophy             4	              ongoing
+```
+
+**Dica**: A ordem dos comandos é `SELECT` → `FROM` → `JOIN` → `WHERE` → `GROUP BY` → `ORDER BY` → `OFFSET` → `LIMIT`
+
+**Dica:** Podemos dar GROUP BY em mais de uma coluna por vez, basta separá-las por virgula
+
+===============================================================================================================================================
+===============================================================================================================================================
+
+PASSO 1: pegar a tabela de educations
+
+QUERY: SELECT * FROM educations;
+
+===============================================================================================================================================
+===============================================================================================================================================
+
+PASSO 2: pegar só os status iguais a 'ongoing' ou 'finished';
+
+
+QUERY: SELECT * FROM educations WHERE status = 'ongoing' OR status = 'finished';
+
+===============================================================================================================================================
+===============================================================================================================================================
+
+PASSO 3: pegar só as tabelas que eu quero ver
+
+QUERY: 
+
+SELECT educations."schoolId", educations."courseId", educations."userId", educations."status" 
+FROM educations 
+WHERE status = 'ongoing' OR status = 'finished';
+
+===============================================================================================================================================
+===============================================================================================================================================
+
+PASSO 4 : conectar com a tabela de escolas e cursos para pegar os nomes
+
+QUERY:
+
+SELECT schools.name, courses.name, educations."userId", educations."status" 
+FROM educations
+JOIN schools 
+ON schools.id = educations."schoolId"
+JOIN courses
+ON courses.id = educations."courseId"
+WHERE status = 'ongoing' OR status = 'finished';
+
+===============================================================================================================================================
+===============================================================================================================================================
+
+PASSO 5: fazer a contagem de alunos (educations."userId"), agrupando por nome de curso, nome de escola e status
+
+SELECT schools.name, courses.name, COUNT(educations."userId"), educations."status" 
+FROM educations
+JOIN schools 
+ON schools.id = educations."schoolId"
+JOIN courses
+ON courses.id = educations."courseId"
+WHERE status = 'ongoing' OR status = 'finished'
+GROUP BY schools.id, courses.id, educations."status";
+
+===============================================================================================================================================
+===============================================================================================================================================
+
+PASSO 6: dando os codinomes das colunas conforme enunciado 
+
+SELECT schools.name AS school, courses.name AS course, COUNT(educations."userId") AS "studentsCount", educations.status AS role
+FROM educations
+JOIN schools 
+ON schools.id = educations."schoolId"
+JOIN courses
+ON courses.id = educations."courseId"
+WHERE status = 'ongoing' OR status = 'finished'
+GROUP BY schools.id, courses.id, educations."status";
+===============================================================================================================================================
+===============================================================================================================================================
+
+PASSO 7: colocando a contagem em ordem decrescente e limitando a visualização para 3, à fim de encontrar as 3 maiores quantdiades de alunos
+
+SELECT schools.name AS school, courses.name AS course, COUNT(educations."userId") AS "studentsCount", educations.status AS role
+FROM educations
+JOIN schools 
+ON schools.id = educations."schoolId"
+JOIN courses
+ON courses.id = educations."courseId"
+WHERE status = 'ongoing' OR status = 'finished'
+GROUP BY schools.id, courses.id, educations."status"
+ORDER BY "studentsCount" DESC
+LIMIT 3;
+
+
+RESPOSTA FINAL:
+
+               school                |   course    | studentsCount |   role   
+-------------------------------------+-------------+---------------+----------
+ Universidad de Los Andes            | Linguistics |             7 | ongoing
+ Universitas Slamet Riyadi Surakarta | Psychology  |             6 | finished
+ American International College      | Philosophy  |             4 | ongoing
+(3 rows)
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
